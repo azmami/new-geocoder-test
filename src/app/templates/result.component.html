@@ -1,0 +1,18 @@
+<div class="result-box">
+    <label class="tag tag-pill tag-info">OLD Geocoder</label>
+    <ul class="results">
+        <li *ngFor="let result of resultsWithOldGeocoder">
+            <small (click)="zoomIn(result.geometry.location)">{{result.formatted_address}}</small>
+        </li>
+    </ul>
+    
+    <hr>
+
+    <label class="tag tag-pill tag-warning">NEW Geocoder</label>
+    <ul class="results">
+        <li class="results" *ngFor="let result of resultsWithNewGeocoder">
+            <small (click)="zoomIn(result.geometry.location)">{{result.formatted_address}}</small>
+        </li>
+    </ul>
+
+</div>

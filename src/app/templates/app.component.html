@@ -1,0 +1,14 @@
+<form class="float-on-map">
+  <div class="form-group box">
+    <input #address (keyup.enter)="geocode(address.value)" type="text" class="form-control" id="addressInput" name="addressInput"
+      placeholder="Input address to test">
+    <input type="checkbox" name="region" [(ngModel)]="region" (change)="onRegionChanged(address.value)"> <small>region=jp</small>
+    <p><small>Note: By default, language parameter is set to 'ja'.</small></p>
+  </div>
+
+  <div class="form-group">
+    <result (centerChanged)="zoomIn($event)" [resultsWithOldGeocoder]="resultsWithOldGeocoder" [resultsWithNewGeocoder]="resultsWithNewGeocoder"></result>
+  </div>
+</form>
+<map [center]="centerLocation" [zoom]="zoomLevel" [google]="google">
+</map>
