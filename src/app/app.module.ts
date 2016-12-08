@@ -5,29 +5,21 @@ import { HttpModule } from '@angular/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AppComponent } from './components/app.component';
-import { MapComponent } from './components/map.component';
-import { ResultComponent } from './components/result.component';
-
-import { GeocoderService } from './services/geocoder.service';
-
-const appRoutes: Routes = [
-  { path: '', component: AppComponent },
-  { path: '**', component: AppComponent }
-];
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { MapModule } from './maps/map.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    MapComponent,
-    ResultComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     NgbModule.forRoot(),
-    //RouterModule.forRoot(appRoutes)
+    MapModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
