@@ -31,7 +31,7 @@ import { Location } from '@angular/common';
         margin: 1em;
     }
     .box {
-        background: white;
+        background-color: rgba(255, 255, 255, 0.8);
         padding: 10px;
         border-radius: 10px;  
         -webkit-border-radius: 10px;  

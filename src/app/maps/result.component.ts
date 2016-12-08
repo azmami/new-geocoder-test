@@ -21,7 +21,7 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
     `,
     styles: [`
     .result-box {
-        background: white;
+        background-color: rgba(255, 255, 255, 0.8);
         padding: 10px;
         border-radius: 10px;  
         -webkit-border-radius: 10px;  
