@@ -40,7 +40,6 @@ export class MapComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        console.log(this.route.params['value']);
         this.region = typeof this.route.params['value'].region !== 'undefined' ? 
             this.route.params['value'].region : '';
         this.language = this.route.params['value'].language;        

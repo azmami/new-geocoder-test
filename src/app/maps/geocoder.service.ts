@@ -8,14 +8,11 @@ export class GeocoderService {
         this.geocoder = new google.maps.Geocoder();
     }
 
-    public geocode(location: string, region: string, isNewGeocoder: boolean): Promise<any> {
+    public geocode(location: string, isNewGeocoder: boolean): Promise<any> {
         let query = {
             address: location,
             newForwardGeocoder: isNewGeocoder
         };
-        if (region !== '') {
-            query['region'] = region;
-        }
 
         return new Promise<any>((resolve, reject) => {
             this.geocoder.geocode(query, (results, status) => {

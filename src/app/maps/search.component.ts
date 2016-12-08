@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
             <input #addressInput (keyup)="updateInputWidth(addressInput.value)" (keyup.enter)="geocode(addressInput.value)" 
             type="text" class="form-control" id="addressInput" 
             name="addressInput" placeholder="Input address to test">
-            <small>region={{region}}</small>
+            <small>API loaded with region={{region}}&language={{language}}</small>
         </div>
         <div class="form-group">
             <result (centerChanged)="zoomIn($event)"
@@ -59,21 +59,22 @@ export class SearchComponent implements OnChanges {
     }
 
     public geocode(location: string): void {
-        if (this.region !== '')
+        if (this.region !== '') {
             this.location.go(`/${this.language};region=${this.region};address=${location}`);
-        else
+        } else {
             this.location.go(`/${this.language};address=${location}`);
+        }
         this.onGeocodingStarted.emit();
         this.resultsWithNewGeocoder = new Array<any>();
         this.resultsWithOldGeocoder = new Array<any>();
-        this.fireGeocode(location, this.region, true);
-        this.fireGeocode(location, this.region, false);
+        this.fireGeocode(location, true);
+        this.fireGeocode(location, false);
     }
 
-    public fireGeocode(location: string, region: string, isNewGeocoder: boolean): void {
+    public fireGeocode(location: string, isNewGeocoder: boolean): void {
         let iconBase = 'https://maps.google.com/mapfiles/ms/micons/';
         
-        this.geocoderService.geocode(location, region, isNewGeocoder).then(results => {
+        this.geocoderService.geocode(location, isNewGeocoder).then(results => {
             for (let index = 0; index < results.length; index++) {
                 let iconUrl = isNewGeocoder ? iconBase + 'orange.png' : iconBase + 'ltblu-pushpin.png';
                 let latLng = results[index].geometry.location;
@@ -101,13 +102,8 @@ export class SearchComponent implements OnChanges {
         this.onCenterChanged.emit({ center: latLng, zoom: 15});
     }
 
-    public onRegionChanged(location: string) {
-        if (location !== '') this.geocode(location);
-    }
-
     // this isn't really good
     public updateInputWidth(location: string) {
-        console.log(location.length);
         if (location.length > 30 && this.inputWidth === 40) {
             this.inputWidth = 60;
         } else if (location.length > 60 && this.inputWidth === 60) {
