@@ -9,6 +9,7 @@ import { GeocoderService } from './geocoder.service';
         (onGeocodingStarted)="clearAllMarkers($event)"
         (onCenterChanged)="zoomIn($event.center, $event.zoom)"
         (onMarkerAdded)="addMarkerWithInfoWindow($event.location, $event.iconUrl, $event.content)"
+        (bounds)="onBoundsChanged($event)"
         [address]="address"
         [region]="region"
         [language]="language"></search>
@@ -87,7 +88,7 @@ export class MapComponent implements OnInit {
             if (this.openInfoWindow != null) this.openInfoWindow.close();
             infoWindow.open(this.map, marker);
             this.openInfoWindow = infoWindow;
-            this.zoomIn(marker.position, 15);
+            this.zoomIn(marker.position, 13);
         });
 
         this.markers.push(marker);
@@ -102,5 +103,10 @@ export class MapComponent implements OnInit {
         for (let marker of this.markers) {
             marker.setMap(null);
         }
+    }
+    
+    public onBoundsChanged(updatedBound: any) {
+        this.map.fitBounds(
+            new this.google.maps.LatLngBounds(updatedBound['southWest'], updatedBound['northEast']));
     }
 }

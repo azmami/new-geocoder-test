@@ -17,9 +17,9 @@ export class GeocoderService {
         return new Promise<any>((resolve, reject) => {
             this.geocoder.geocode(query, (results, status) => {
                 if (status == 'OK') {
-                    return resolve(results);
+                    return resolve({ status: status, results: results });
                 } else {
-                    return reject(status);
+                    return reject({ status: status, results: results });
                 }
             });
         });

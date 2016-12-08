@@ -43,6 +43,8 @@ export class SearchComponent implements OnChanges {
     private resultsWithNewGeocoder: Array<any> = new Array<any>();
     private resultsWithOldGeocoder: Array<any> = new Array<any>();
     private inputWidth: number = 40; // min: 40, max: 90
+    private allLocations: Array<any> = new Array<any>();
+    @Output() bounds: EventEmitter<any> = new EventEmitter<any>();
     @ViewChild(MapComponent)
     private mapComponent: MapComponent;
     @Input() region: string;
@@ -52,15 +54,16 @@ export class SearchComponent implements OnChanges {
     @Output() onCenterChanged: EventEmitter<any> = new EventEmitter<any>();
     @Output() onMarkerAdded: EventEmitter<any> = new EventEmitter<any>();
 
-    constructor (private _ngZone: NgZone, private geocoderService: GeocoderService, private location: Location) {
+    constructor(private _ngZone: NgZone, private geocoderService: GeocoderService, private location: Location) {
     }
 
-    ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
+    ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
         if (typeof changes['address'].currentValue !== 'undefined' && changes['address'].currentValue !== '')
             this.geocode(changes['address'].currentValue);
     }
 
     public geocode(location: string): void {
+        this.allLocations = new Array<any>();
         if (this.region !== '') {
             this.location.go(`/${this.language};region=${this.region};address=${location}`);
         } else {
@@ -69,39 +72,48 @@ export class SearchComponent implements OnChanges {
         this.onGeocodingStarted.emit();
         this.resultsWithNewGeocoder = new Array<any>();
         this.resultsWithOldGeocoder = new Array<any>();
-        this.fireGeocode(location, true);
-        this.fireGeocode(location, false);
+        this.fireGeocode(location, true).then(() => {
+            this.fireGeocode(location, false).then((status) => {
+                if (status === 'OK') {
+                    this.getNorthEastSouthWest().then((northEastSouthWest) => {
+                        this.bounds.emit(northEastSouthWest);
+                    });
+                }
+            });
+        });
     }
 
-    public fireGeocode(location: string, isNewGeocoder: boolean): void {
+    public fireGeocode(location: string, isNewGeocoder: boolean): Promise<any> {
         let iconBase = 'https://maps.google.com/mapfiles/ms/micons/';
-        
-        this.geocoderService.geocode(location, isNewGeocoder).then(results => {
-            for (let index = 0; index < results.length; index++) {
+        return new Promise<any>((resolve, reject) => this.geocoderService.geocode(location, isNewGeocoder).then(result => {
+            for (let index = 0; index < result.results.length; index++) {
                 let iconUrl = isNewGeocoder ? iconBase + 'orange.png' : iconBase + 'ltblu-pushpin.png';
-                let latLng = results[index].geometry.location;
+                let latLng = result.results[index].geometry.location;
+
+                this.allLocations.push(latLng);
 
                 let content = `Result for ${location} `;
                 if (isNewGeocoder) {
                     content += 'by <b>New</b> Geocoder<br>';
-                    this.resultsWithNewGeocoder.push(results[index]);
+                    this.resultsWithNewGeocoder.push(result.results[index]);
                 } else {
                     content += 'by <b>Old</b> Geocoder<br>';
-                    this.resultsWithOldGeocoder.push(results[index]);
+                    this.resultsWithOldGeocoder.push(result.results[index]);
                 }
                 content += `latLng = (${latLng.lat()}, ${latLng.lng()})<br>`;
-                content += `<small><b>formatted_address:</b> ${results[index].formatted_address}</small><br>`;
-                content += `<small><b>place_id:</b> ${results[index].place_id}</small><br>`;
+                content += `<small><b>formatted_address:</b> ${result.results[index].formatted_address}</small><br>`;
+                content += `<small><b>place_id:</b> ${result.results[index].place_id}</small><br>`;
 
                 this.onMarkerAdded.emit({ location: latLng, iconUrl: iconUrl, content: content });
             }
-        }).catch(status => {
-            console.error("error: " + status);
-        });
+            resolve(result.status);
+        }).catch(result => {
+            resolve(result.status);
+        }));
     }
 
     public zoomIn(latLng: any) {
-        this.onCenterChanged.emit({ center: latLng, zoom: 15});
+        this.onCenterChanged.emit({ center: latLng, zoom: 15 });
     }
 
     // this isn't really good
@@ -113,5 +125,29 @@ export class SearchComponent implements OnChanges {
         } else if (location.length === 0) {
             this.inputWidth = 40; // change back to default
         }
+    }
+
+    public getNorthEastSouthWest(): Promise<any> {
+        let north, south, east, west = 0;
+        return new Promise<any>((resolve, reject) => {
+            for (let index = 0; index < this.allLocations.length; index++) {
+                let latLng = this.allLocations[index];
+                if (index === 0) {
+                    north = latLng.lat();
+                    south = latLng.lat();
+                    east = latLng.lng();
+                    west = latLng.lng();
+                } else {
+                    if (south >= latLng.lat()) south = latLng.lat();
+                    if (north <= latLng.lat()) north = latLng.lat();
+                    if (west >= latLng.lng()) west = latLng.lng();
+                    if (east <= latLng.lng()) east = latLng.lng();
+                }
+                if (index === this.allLocations.length - 1) {
+                    return resolve({ northEast: { lat: north, lng: east }, 
+                                     southWest: { lat: south, lng: west } });
+                }
+            }
+        });
     }
 }
