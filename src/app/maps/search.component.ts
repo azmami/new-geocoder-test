@@ -11,7 +11,9 @@ import { Location } from '@angular/common';
             <input #addressInput (keyup)="updateInputWidth(addressInput.value)" (keyup.enter)="geocode(addressInput.value)" 
             type="text" class="form-control" id="addressInput" 
             name="addressInput" placeholder="Input address to test">
-            <small>API loaded with region={{region}}&language={{language}}</small>
+            <small>
+                API loaded with language=<b>{{language}}</b><p style="display:inline" *ngIf="region !== ''">&region=<b>{{region}}</b></p>
+            </small>
         </div>
         <div class="form-group">
             <result (centerChanged)="zoomIn($event)"
