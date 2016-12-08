@@ -6,15 +6,15 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
     <div class="result-box">
         <label class="tag tag-pill tag-info">OLD Geocoder</label>
         <ul class="results">
-            <li *ngFor="let result of resultsWithOldGeocoder">
+            <li (click)="zoomIn(result.geometry.location)" *ngFor="let result of resultsWithOldGeocoder">
                 <small (click)="zoomIn(result.geometry.location)">{{result.formatted_address}}</small>
             </li>
         </ul>
         <hr>
         <label class="tag tag-pill tag-warning">NEW Geocoder</label>
         <ul class="results">
-            <li class="results" *ngFor="let result of resultsWithNewGeocoder">
-                <small (click)="zoomIn(result.geometry.location)">{{result.formatted_address}}</small>
+            <li (click)="zoomIn(result.geometry.location)" *ngFor="let result of resultsWithNewGeocoder">
+                <small>{{result.formatted_address}}</small>
             </li>
         </ul>
     </div>
@@ -29,6 +29,7 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
     }
     ul {
         list-style-type: none;
+        padding: 0;
     }
     .results li {
         cursor: pointer;
