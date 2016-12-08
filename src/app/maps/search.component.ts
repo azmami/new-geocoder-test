@@ -6,9 +6,9 @@ import { Location } from '@angular/common';
 @Component({
     selector: 'search',
     template: `
-    <form class="float-on-map">
+    <form class="float-on-map" [style.width]="inputWidth + '%'">
         <div class="form-group box">
-            <input #addressInput (keyup.enter)="geocode(addressInput.value)" 
+            <input #addressInput (keyup)="updateInputWidth(addressInput.value)" (keyup.enter)="geocode(addressInput.value)" 
             type="text" class="form-control" id="addressInput" 
             name="addressInput" placeholder="Input address to test">
             <small>region={{region}}</small>
@@ -40,6 +40,7 @@ import { Location } from '@angular/common';
 export class SearchComponent implements OnChanges {
     private resultsWithNewGeocoder: Array<any> = new Array<any>();
     private resultsWithOldGeocoder: Array<any> = new Array<any>();
+    private inputWidth: number = 40; // min: 40, max: 90
     @ViewChild(MapComponent)
     private mapComponent: MapComponent;
     @Input() region: string;
@@ -58,7 +59,10 @@ export class SearchComponent implements OnChanges {
     }
 
     public geocode(location: string): void {
-        this.location.go(`/${this.language};region=${this.region};address=${location}`);
+        if (this.region !== '')
+            this.location.go(`/${this.language};region=${this.region};address=${location}`);
+        else
+            this.location.go(`/${this.language};address=${location}`);
         this.onGeocodingStarted.emit();
         this.resultsWithNewGeocoder = new Array<any>();
         this.resultsWithOldGeocoder = new Array<any>();
@@ -99,5 +103,17 @@ export class SearchComponent implements OnChanges {
 
     public onRegionChanged(location: string) {
         if (location !== '') this.geocode(location);
+    }
+
+    // this isn't really good
+    public updateInputWidth(location: string) {
+        console.log(location.length);
+        if (location.length > 30 && this.inputWidth === 40) {
+            this.inputWidth = 60;
+        } else if (location.length > 60 && this.inputWidth === 60) {
+            this.inputWidth = 90;
+        } else if (location.length === 0) {
+            this.inputWidth = 40; // change back to default
+        }
     }
 }

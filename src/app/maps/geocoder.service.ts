@@ -11,9 +11,11 @@ export class GeocoderService {
     public geocode(location: string, region: string, isNewGeocoder: boolean): Promise<any> {
         let query = {
             address: location,
-            newForwardGeocoder: isNewGeocoder,
-            region: region
+            newForwardGeocoder: isNewGeocoder
         };
+        if (region !== '') {
+            query['region'] = region;
+        }
 
         return new Promise<any>((resolve, reject) => {
             this.geocoder.geocode(query, (results, status) => {
