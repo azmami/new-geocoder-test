@@ -10,7 +10,8 @@ import { GeocoderService } from './geocoder.service';
         (onCenterChanged)="zoomIn($event.center, $event.zoom)"
         (onMarkerAdded)="addMarkerWithInfoWindow($event.location, $event.iconUrl, $event.content)"
         [address]="address"
-        [region]="region"></search>
+        [region]="region"
+        [language]="language"></search>
         <div id="map"></div>
     `,
     styles: [`
@@ -30,6 +31,7 @@ export class MapComponent implements OnInit {
     private apiLoader: GoogleMapsAPILoader;
     private region: string;
     private address: string;
+    private language: string;
 
     constructor(
         private route: ActivatedRoute,
@@ -39,9 +41,10 @@ export class MapComponent implements OnInit {
 
     ngOnInit() {
         this.region = typeof this.route.params['value'].region !== 'undefined' ? 
-            this.route.params['value'].region : 'jp';        
+            this.route.params['value'].region : 'jp';
+        this.language = this.route.params['value'].language;        
         this.apiLoader = new GoogleMapsAPILoader(
-            this.route.params['value'].language,
+            this.language,
             'AIzaSyCAvlq4lkpxhovrO2khvJv9dAZHMsNY1g0',
             '3.exp');
         this.apiLoader.loadAPI().then(google => {

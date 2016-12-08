@@ -1,6 +1,7 @@
 import { Component, ViewChild, NgZone, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { MapComponent } from './map.component';
 import { GeocoderService } from './geocoder.service';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'search',
@@ -43,11 +44,12 @@ export class SearchComponent implements OnChanges {
     private mapComponent: MapComponent;
     @Input() region: string;
     @Input() address: string;
+    @Input() language: string;
     @Output() onGeocodingStarted: EventEmitter<any> = new EventEmitter<any>();
     @Output() onCenterChanged: EventEmitter<any> = new EventEmitter<any>();
     @Output() onMarkerAdded: EventEmitter<any> = new EventEmitter<any>();
 
-    constructor (private _ngZone: NgZone, private geocoderService: GeocoderService) {
+    constructor (private _ngZone: NgZone, private geocoderService: GeocoderService, private location: Location) {
     }
 
     ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
@@ -56,6 +58,7 @@ export class SearchComponent implements OnChanges {
     }
 
     public geocode(location: string): void {
+        this.location.go(`/${this.language};region=${this.region};address=${location}`);
         this.onGeocodingStarted.emit();
         this.resultsWithNewGeocoder = new Array<any>();
         this.resultsWithOldGeocoder = new Array<any>();
