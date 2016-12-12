@@ -10,7 +10,7 @@ const appRoutes: Routes = [
     },
     {
         path: '',
-        redirectTo: '/ja',
+        redirectTo: '/en',
         pathMatch: 'full'
     }
 ];
