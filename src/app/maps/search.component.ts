@@ -64,10 +64,14 @@ export class SearchComponent implements OnChanges {
 
     public geocode(location: string): void {
         this.allLocations = new Array<any>();
+        // replace zenkaku space with +
+        let zenkakuSpaceRemoved = location.replace(/　/g, '+');
+        // and then replace hankaku space with +
+        let spaceRemoved = zenkakuSpaceRemoved.replace(/ /g, '+');
         if (this.region !== '') {
-            this.location.go(`/${this.language};region=${this.region};address=${location}`);
+            this.location.go(`/${this.language};region=${this.region};address=${spaceRemoved};`);
         } else {
-            this.location.go(`/${this.language};address=${location}`);
+            this.location.go(`/${this.language};address=${spaceRemoved};`);
         }
         this.onGeocodingStarted.emit();
         this.resultsWithNewGeocoder = new Array<any>();
