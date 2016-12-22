@@ -53,7 +53,7 @@ export class MapComponent implements OnInit {
             this.google = google;
             this.geocoderService.initialize(google);
             this.center = { lat: 35.664, lng: 139.729 }; // Roppongi, by default
-            this.zoom = 5;
+            this.zoom = 3;
             let map = new this.google.maps.Map(document.getElementById('map'), {
                 center: this.center,
                 zoom: this.zoom,
