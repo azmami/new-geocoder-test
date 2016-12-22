@@ -45,8 +45,7 @@ export class SearchComponent implements OnChanges {
     private inputWidth: number = 40; // min: 40, max: 90
     private allLocations: Array<any> = new Array<any>();
     @Output() bounds: EventEmitter<any> = new EventEmitter<any>();
-    @ViewChild(MapComponent)
-    private mapComponent: MapComponent;
+    @ViewChild(MapComponent) private mapComponent: MapComponent;
     @Input() region: string;
     @Input() address: string;
     @Input() language: string;
@@ -77,19 +76,17 @@ export class SearchComponent implements OnChanges {
         this.resultsWithNewGeocoder = new Array<any>();
         this.resultsWithOldGeocoder = new Array<any>();
         this.fireGeocode(location, true).then(() => {
-            this.fireGeocode(location, false).then((status) => {
-                if (status === 'OK') {
-                    this.getNorthEastSouthWest().then((northEastSouthWest) => {
-                        this.bounds.emit(northEastSouthWest);
-                    });
-                }
+            this.fireGeocode(location, false).then(() => {
+                this.getNorthEastSouthWest().then((northEastSouthWest) => {
+                    this.bounds.emit(northEastSouthWest);
+                });
             });
         });
     }
 
     public fireGeocode(location: string, isNewGeocoder: boolean): Promise<any> {
         let iconBase = 'https://maps.google.com/mapfiles/ms/micons/';
-        return new Promise<any>((resolve, reject) => this.geocoderService.geocode(location, isNewGeocoder).then(result => {
+        return new Promise<any>((resolve, reject) => this.geocoderService.geocode(location, isNewGeocoder).then((result) => {
             for (let index = 0; index < result.results.length; index++) {
                 let iconUrl = isNewGeocoder ? iconBase + 'orange.png' : iconBase + 'ltblu-pushpin.png';
                 let latLng = result.results[index].geometry.location;
@@ -109,10 +106,10 @@ export class SearchComponent implements OnChanges {
                 content += `<small><b>place_id:</b> ${result.results[index].place_id}</small><br>`;
 
                 this.onMarkerAdded.emit({ location: latLng, iconUrl: iconUrl, content: content });
+                if (index == result.results.length - 1) resolve();
             }
-            resolve(result.status);
-        }).catch(result => {
-            resolve(result.status);
+        }).catch((result) => {
+            resolve();
         }));
     }
 
@@ -120,7 +117,6 @@ export class SearchComponent implements OnChanges {
         this.onCenterChanged.emit({ center: latLng, zoom: 15 });
     }
 
-    // this isn't really good
     public updateInputWidth(location: string) {
         if (location.length > 30 && this.inputWidth === 40) {
             this.inputWidth = 60;
@@ -148,8 +144,10 @@ export class SearchComponent implements OnChanges {
                     if (east <= latLng.lng()) east = latLng.lng();
                 }
                 if (index === this.allLocations.length - 1) {
-                    return resolve({ northEast: { lat: north, lng: east }, 
-                                     southWest: { lat: south, lng: west } });
+                    return resolve({
+                        northEast: { lat: north, lng: east },
+                        southWest: { lat: south, lng: west }
+                    });
                 }
             }
         });
