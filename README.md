@@ -1,4 +1,9 @@
-# NewGeocoder
+Deployed to https://forward-geocoder-sample.firebaseapp.com/
+
+## How to use
+https://forward-geocoder-sample.firebaseapp.com/#/*language*;address=*address+you+want+to+check*;region=*region*
+### Example:
+https://forward-geocoder-sample.firebaseapp.com/#/en;region=jp;address=saitama-ken+tokorozawa-shi+wakasa;
 
 This project was generated with [angular-cli](https://github.com/angular/angular-cli) version 1.0.0-beta.18.
 

@@ -2,6 +2,7 @@ import { Component, Input, Output, OnInit, OnChanges, EventEmitter } from '@angu
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { GoogleMapsAPILoader } from './google-maps-api-loader';
 import { GeocoderService } from './geocoder.service';
+import { environment } from '../../environments/environment';
 
 @Component({ 
     template: `
@@ -45,10 +46,10 @@ export class MapComponent implements OnInit {
             this.route.params['value'].region : '';
         this.language = this.route.params['value'].language;        
         this.apiLoader = new GoogleMapsAPILoader(
+            environment.apiKey,
+            environment.apiVer,
             this.language,
-            this.region,
-            'AIzaSyCAvlq4lkpxhovrO2khvJv9dAZHMsNY1g0',
-            '3.exp');
+            this.region);
         this.apiLoader.loadAPI().then(google => {
             this.google = google;
             this.geocoderService.initialize(google);
