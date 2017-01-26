@@ -1,7 +1,8 @@
 Deployed to https://forward-geocoder-sample.firebaseapp.com/
+##### (You might see some duplicate results. The duplicate issue happens randomly and I don't know how to fix it.)
 
 ## How to use
-https://forward-geocoder-sample.firebaseapp.com/#/*language*;address=*address+you+want+to+check*;region=*region*
+https://forward-geocoder-sample.firebaseapp.com/#/language;address=address+you+want+to+check;region=region
 ### Example:
 https://forward-geocoder-sample.firebaseapp.com/#/en;region=jp;address=saitama-ken+tokorozawa-shi+wakasa;
 
