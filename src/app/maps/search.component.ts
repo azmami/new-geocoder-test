@@ -8,7 +8,9 @@ import { Location } from '@angular/common';
     template: `
     <form class="float-on-map" [style.width]="inputWidth + '%'">
         <div class="form-group box">
-            <input #addressInput (keyup)="updateInputWidth(addressInput.value)" (keyup.enter)="geocode(addressInput.value)" 
+            <input #addressInput (keyup)="updateInputWidth(addressInput.value)"
+            (keyup.enter)="geocode(addressInput.value)"
+            [disabled]="isGeocodingNow"
             type="text" class="form-control" id="addressInput" 
             name="addressInput" placeholder="Input address to test">
             <small>
@@ -18,7 +20,9 @@ import { Location } from '@angular/common';
         <div class="form-group">
             <result (centerChanged)="zoomIn($event)"
              [resultsWithOldGeocoder]="resultsWithOldGeocoder" 
-             [resultsWithNewGeocoder]="resultsWithNewGeocoder">
+             [resultsWithNewGeocoder]="resultsWithNewGeocoder"
+             [errorFromOldGeocoder]="errorFromOldGeocoder"
+             [errorFromNewGeocoder]="errorFromNewGeocoder">
             </result>
         </div>
     </form>
@@ -40,8 +44,11 @@ import { Location } from '@angular/common';
     `]
 })
 export class SearchComponent implements OnChanges {
+    private isGeocodingNow: boolean;
     private resultsWithNewGeocoder: Array<any> = new Array<any>();
     private resultsWithOldGeocoder: Array<any> = new Array<any>();
+    private errorFromNewGeocoder: string = '';
+    private errorFromOldGeocoder: string = '';
     private inputWidth: number = 40; // min: 40, max: 90
     private allLocations: Array<any> = new Array<any>();
     @Output() bounds: EventEmitter<any> = new EventEmitter<any>();
@@ -62,6 +69,9 @@ export class SearchComponent implements OnChanges {
     }
 
     public geocode(location: string): void {
+        if (location.length === 0) return; // if empty string provided, do nothing
+
+        this.isGeocodingNow = true;
         this.allLocations = new Array<any>();
         // replace zenkaku space with +
         let zenkakuSpaceRemoved = location.replace(/　/g, '+');
@@ -75,8 +85,12 @@ export class SearchComponent implements OnChanges {
         this.onGeocodingStarted.emit();
         this.resultsWithNewGeocoder = new Array<any>();
         this.resultsWithOldGeocoder = new Array<any>();
+        this.errorFromNewGeocoder = '';
+        this.errorFromOldGeocoder = '';
+
         this.fireGeocode(location, true).then(() => {
             this.fireGeocode(location, false).then(() => {
+                this.isGeocodingNow = false;
                 this.getNorthEastSouthWest().then((northEastSouthWest) => {
                     this.bounds.emit(northEastSouthWest);
                 });
@@ -109,6 +123,11 @@ export class SearchComponent implements OnChanges {
                 if (index == result.results.length - 1) resolve();
             }
         }).catch((result) => {
+            if(isNewGeocoder) {
+                this.errorFromNewGeocoder = result.status;
+            } else {
+                this.errorFromOldGeocoder = result.status;
+            }
             resolve();
         }));
     }

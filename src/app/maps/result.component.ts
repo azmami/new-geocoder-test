@@ -10,6 +10,7 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
                 <small (click)="zoomIn(result.geometry.location)">{{result.formatted_address}}</small>
             </li>
         </ul>
+        <span *ngIf="errorFromOldGeocoder" class="error">ZERO_RESULTS</span>
         <hr>
         <label class="tag tag-pill tag-warning">NEW Geocoder</label>
         <ul class="results">
@@ -17,6 +18,7 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
                 <small>{{result.formatted_address}}</small>
             </li>
         </ul>
+        <span *ngIf="errorFromNewGeocoder" class="error">ZERO_RESULTS</span>
     </div>
     `,
     styles: [`
@@ -44,11 +46,17 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
         background-color: #DDD;
         left: .1em;
     }
+    .error {
+        font-size: 0.8em;
+        color: red;
+    }
     `]
 })
 export class ResultComponent {
     @Input() resultsWithOldGeocoder: Array<any>;
     @Input() resultsWithNewGeocoder: Array<any>;
+    @Input() errorFromOldGeocoder: string;
+    @Input() errorFromNewGeocoder: string;
     @Output() centerChanged: EventEmitter<any> = new EventEmitter<any>();
 
     public zoomIn(latLng: any): void {
