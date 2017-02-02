@@ -66,7 +66,7 @@ export class MapComponent implements OnInit {
             });
             this.map = map;
             if (typeof this.route.params['value'].address !== 'undefined') {
-                this.address = this.route.params['value'].address;
+                this.address = this.route.params['value'].address.split('+').join(' ');        
             } else {
                 this.address = '';
             }

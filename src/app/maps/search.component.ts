@@ -87,9 +87,10 @@ export class SearchComponent implements OnChanges {
         this.resultsWithOldGeocoder = new Array<any>();
         this.errorFromNewGeocoder = '';
         this.errorFromOldGeocoder = '';
-
+        console.log("FIRING GEOCODER=======================")
         this.fireGeocode(location, true).then(() => {
             this.fireGeocode(location, false).then(() => {
+                console.log("DONE=======================");
                 this.isGeocodingNow = false;
                 this.getNorthEastSouthWest().then((northEastSouthWest) => {
                     this.bounds.emit(northEastSouthWest);
@@ -100,7 +101,9 @@ export class SearchComponent implements OnChanges {
 
     public fireGeocode(location: string, isNewGeocoder: boolean): Promise<any> {
         let iconBase = 'https://maps.google.com/mapfiles/ms/micons/';
+        console.log((isNewGeocoder? "NEW GEOCODER" : "OLD GEOCODER") + " | QUERYING: [" + location + "]");
         return new Promise<any>((resolve, reject) => this.geocoderService.geocode(location, isNewGeocoder).then((result) => {
+            console.log(result);
             for (let index = 0; index < result.results.length; index++) {
                 let iconUrl = isNewGeocoder ? iconBase + 'orange.png' : iconBase + 'ltblu-pushpin.png';
                 let latLng = result.results[index].geometry.location;
