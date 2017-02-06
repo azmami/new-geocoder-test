@@ -4,7 +4,8 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
     selector: 'result',
     template: `
     <div class="result-box">
-        <label class="tag tag-pill tag-info">OLD Geocoder</label>
+        <label class="tag tag-pill tag-info">OLD Geocoder</label> 
+        <span class="seconds">{{oldGeocoderElapsedTime}} seconds</span>
         <ul class="results">
             <li (click)="zoomIn(result.geometry.location)" *ngFor="let result of resultsWithOldGeocoder">
                 <small (click)="zoomIn(result.geometry.location)">{{result.formatted_address}}</small>
@@ -13,6 +14,7 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
         <span *ngIf="errorFromOldGeocoder" class="error">ZERO_RESULTS</span>
         <hr>
         <label class="tag tag-pill tag-warning">NEW Geocoder</label>
+        <span class="seconds">{{newGeocoderElapsedTime}} seconds</span>
         <ul class="results">
             <li (click)="zoomIn(result.geometry.location)" *ngFor="let result of resultsWithNewGeocoder">
                 <small>{{result.formatted_address}}</small>
@@ -50,6 +52,10 @@ import { Component, Input, ViewChild, EventEmitter, Output } from '@angular/core
         font-size: 0.8em;
         color: red;
     }
+    .seconds { 
+        font-size: 0.7em;
+        font-style: italic;
+    }
     `]
 })
 export class ResultComponent {
@@ -57,6 +63,8 @@ export class ResultComponent {
     @Input() resultsWithNewGeocoder: Array<any>;
     @Input() errorFromOldGeocoder: string;
     @Input() errorFromNewGeocoder: string;
+    @Input() oldGeocoderElapsedTime: number;
+    @Input() newGeocoderElapsedTime: number;
     @Output() centerChanged: EventEmitter<any> = new EventEmitter<any>();
 
     public zoomIn(latLng: any): void {

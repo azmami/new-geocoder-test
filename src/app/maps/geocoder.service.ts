@@ -15,11 +15,13 @@ export class GeocoderService {
         };
 
         return new Promise<any>((resolve, reject) => {
+            let startTime = new Date().getTime();
             this.geocoder.geocode(query, (results, status) => {
+                let elapsedTime = (new Date().getTime() - startTime) / 1000;
                 if (status == 'OK') {
-                    return resolve({ status: status, results: results });
+                    return resolve({ status: status, results: results, elapsedTime: elapsedTime });
                 } else {
-                    return reject({ status: status, results: results });
+                    return reject({ status: status, results: results, elapsedTime: elapsedTime });
                 }
             });
         });

@@ -20,7 +20,9 @@ import { Location } from '@angular/common';
         <div class="form-group">
             <result (centerChanged)="zoomIn($event)"
              [resultsWithOldGeocoder]="resultsWithOldGeocoder" 
+             [oldGeocoderElapsedTime]="oldGeocoderElapsedTime"
              [resultsWithNewGeocoder]="resultsWithNewGeocoder"
+             [newGeocoderElapsedTime]="newGeocoderElapsedTime"
              [errorFromOldGeocoder]="errorFromOldGeocoder"
              [errorFromNewGeocoder]="errorFromNewGeocoder">
             </result>
@@ -49,6 +51,8 @@ export class SearchComponent implements OnChanges {
     private resultsWithOldGeocoder: Array<any> = new Array<any>();
     private errorFromNewGeocoder: string = '';
     private errorFromOldGeocoder: string = '';
+    private newGeocoderElapsedTime: number = 0;
+    private oldGeocoderElapsedTime: number = 0;
     private inputWidth: number = 40; // min: 40, max: 90
     private allLocations: Array<any> = new Array<any>();
     @Output() bounds: EventEmitter<any> = new EventEmitter<any>();
@@ -103,6 +107,10 @@ export class SearchComponent implements OnChanges {
         let iconBase = 'https://maps.google.com/mapfiles/ms/micons/';
         console.log((isNewGeocoder? "NEW GEOCODER" : "OLD GEOCODER") + " | QUERYING: [" + location + "]");
         return new Promise<any>((resolve, reject) => this.geocoderService.geocode(location, isNewGeocoder).then((result) => {
+
+            if(isNewGeocoder) this.newGeocoderElapsedTime = result.elapsedTime;
+            else this.oldGeocoderElapsedTime = result.elapsedTime;
+
             console.log(result);
             for (let index = 0; index < result.results.length; index++) {
                 let iconUrl = isNewGeocoder ? iconBase + 'orange.png' : iconBase + 'ltblu-pushpin.png';
